@@ -15,7 +15,7 @@ Systems capable of learning patterns from data and making decisions or predictio
 Why we need to use ML: Example with spam detection system.
 
 ### Traditional Programming Approach
-DATA + HANDWRITTEN RULES = RLEARNED RULES (MODEL)
+DATA + HANDWRITTEN RULES = LEARNED RULES (MODEL)
 
 Manual Process:
 1. Manually analyze numerous emails to identify patterns.
