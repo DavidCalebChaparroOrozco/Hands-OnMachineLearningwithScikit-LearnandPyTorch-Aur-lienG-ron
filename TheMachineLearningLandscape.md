@@ -177,3 +177,152 @@ Important: They are not always bad
 - Anomalies: Are the target
 
 _Do not automatically delete!_
+
+## Solution: Regularization
+Preventing the model from becoming overly complicated
+
+**What is it?**
+
+It's a technique to prevent the model from becoming 'too specific' with the training data.
+
+**You impose LIMITS on learning**
+
+_"Learn the general, don't memorize the details"_
+
+### The problem: Overfitting
+The model learns the training data **TOO WELL**, including noise and irrelevant details.
+
+As a result, it fails to generalize with new, real-world data.
+
+**It memorizes incorrect 'rules' such as:**
+- 'If the house has 2-3 bathrooms, it sells'
+- 'If the customer is from city X, they don't buy'
+
+### The model memorizes instead of learning
+
+## Analogy: The Student
+### Without Tutoring 😐
+_The student who memorizes:_
+- Memorizes all the answers
+- Learns useless details
+- Gets a 10 on the practice exam
+- _**Fails the real exam**_
+
+---
+
+**Overfitting**
+
+### With Tutoring ✅
+_The student who understands:_
+- Learns the main ideas
+- Doesn't get bogged down in details
+- Doesn't get a 10 on the practice exam
+- _**Passes the real exam**_
+
+**Generalization**
+
+---
+Regularization sacrifices training accuracy for real-world performance gains.
+
+Technically: It prevents model weights from becoming excessively large.
+
+---
+
+## Overfitting: Complete Definition
+### What is overfitting?
+The model fits the training data TOO tightly.
+
+Instead of learning general patterns... it memorizes details, noise, and coincidences from the training data.
+
+**Excellent performance in training, but FAILS with new data.**
+
+**UNABLE TO GENERALIZE**
+
+### Common Causes
+Overfitting is facilitated by:
+- Insufficient data (sampling noise)
+- Data with outliers
+- Noisy datasets
+- Highly complex models
+
+The model learns aspects that are NOT based on reality.
+
+### The model gets confused... 😵‍💫
+- Coincidences = Real patterns
+- Noise = Useful information
+- Specific cases - General rules
+
+## Overfitting: Identification and Solutions
+### How does it manifest in practice? 📊
+
+- VERY HIGH performance on training data
+
+- LOWER performance on validation/test data
+
+**This difference indicates that the model does not generalize correctly**
+
+### How to reduce overfitting?
+
+- Collect MORE DATA.
+
+- Apply REGULARIZATION
+- Use cross-validation
+- Simplify the model
+- Remove noise from the data
+
+_⚠️Overfitting does not mean the model is bad, but rather that it learned too much from the training data._
+
+---
+
+## Underfitting: The Opposite Problem
+The model is TOO SIMPLE for the problem it's trying to solve.
+
+_**It fails to learn the basic patterns in the data.**_
+
+Poor performance **BOTH** in training and with new data.
+
+This usually happens when:
+- The model has very little capacity (it's too simple).
+- The variables used are not predictive enough.
+- The training is insufficient (too few epochs).
+
+_The model isn't even able to understand the problem_
+
+Characteristics:
+- It doesn't capture the real relationship in the data.
+
+- It ignores important information and patterns.
+- Poor predictions (even in training).
+- The problem is NOT in the data.
+- It's in the model's capacity.
+
+**Poor performance across the board**
+
+## Underfitting: Example and Analogy
+
+### Example: House Price Prediction 🏠
+
+**You only use:**
+
+Number of bedrooms
+
+_But the price depends on:_
+- Location
+- Lot size
+- Age
+- Nearby amenities
+
+**The model learns something very basic:**
+
+_'More bedrooms = More expensive'_
+
+**This pattern is INSUFFICIENT for reality. It fails in training and production.**
+
+### Analogy: Simple Math 🎯
+If you try to solve complex equations but only know how to add:
+**YOU WILL FAIL.**
+
+- Even if you have many exercises
+- Even if you practice a lot
+
+**The problem is NOT the amount of practice. It's that the method is TOO SIMPLE.**
