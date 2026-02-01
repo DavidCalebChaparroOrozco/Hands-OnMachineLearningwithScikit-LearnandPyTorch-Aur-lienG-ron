@@ -281,3 +281,84 @@ $$
 3. Average: $\frac{(4 + 25 + 4)}{3}  = 11$
 4. Square root: $\sqrt{11} = 3.3$
 
+RMSE = 3.3
+On average, the model is off by ~3 degrees
+
+---
+
+## MAE: Mean Absolute Error
+
+Measures how wrong the model is, on average, without exaggerating large errors.
+
+**The "honest" average error**
+
+Formula:
+
+$$
+\mathrm{MAE}(X, y, h) \;=\; \frac{1}{m} \sum_{i=1}^{m} \left| h\left(x^{(i)}\right) - y^{(i)} \right|
+$$
+
+- m = total number of data points
+- h(x) = model prediction
+- y = actual value
+- || = absolute value (ignore sign)
+
+### Example: Same temperature data
+| Day 	| Real (y) 	| Prediction h(x) 	| Error 	|
+|:---:	|:--------:	|:---------------:	|:-----:	|
+|  1  	|    20    	|        18       	|   -2  	|
+|  2  	|    25    	|        30       	|   5   	|
+|  3  	|    30    	|        28       	|   -2  	|
+
+**Step by step:**
+1. Absolute errors: |-2| = 2, |5| = 5, |-2| = 2
+2. Average: $\frac{(2 + 5 + 2)}{3} = 3$
+
+**MAE = 3 degrees**
+
+_On average, the model is off by 3 units_
+
+---
+
+## **RMSE was 3.3 | MAE is 3.0**
+
+---
+
+## RMSE vs MAE: Which to Use?
+
+### RMSE
+Penalizes large errors
+_When large errors are very costly_
+
+**$(error)^2$**
+
+### MAE
+Treats all errors equally
+_For an "honest" view of the average error_
+
+**$|error|$**
+
+### Decision Guide:
+- Do large errors cause critical problems?
+  - Use RMSE -> Consider MAE
+
+- Are there many outliers in your data?
+  - MAE is more robust -> Both work
+
+- Do you need to emphasize extreme precision?
+  - Use RMSE -> MAE is more interpretable
+
+## Production Applications
+
+Real-world models: Which metric to use?
+| Typical Real-World Application | Metric | Reason |
+|:-----------------------------:|:------:|:------:|
+| Pricing (houses, cars)        | MAE    | Normal Outliers |
+| ETA / Logistics               | MAE    | Average Error Matters |
+| Sales Forecast                | MAE    | Noisy Data |
+| Industrial Sensors            | RMSE   | Large Errors Dangerous |
+| Energy                        | RMSE   | Costly Spikes |
+| Finance                       | RMSE   | Extreme Risk |
+| Medicine                      | RMSE   | Safety Critical |
+
+**The choice of metric depends on the CONTEXT and the CONSEQUENCES of the errors**
