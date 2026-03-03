@@ -296,3 +296,4 @@ Now, train and evaluate your models
 
 > ## ❌ Common Mistake
 > Jumping straight to the model without understanding the data results in models that don't generalize well.
+
