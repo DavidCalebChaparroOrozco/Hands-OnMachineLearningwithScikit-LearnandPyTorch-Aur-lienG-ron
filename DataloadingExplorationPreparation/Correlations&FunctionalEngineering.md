@@ -108,3 +108,4 @@ housing_pd["bedrooms_per_room"] = housing_pd["total_bedrooms"] / housing_pd["tot
 housing_pd["people_per_houses"] = housing_pd["Population"] / housing_pd["HouseAge"]
 
 ```
+
