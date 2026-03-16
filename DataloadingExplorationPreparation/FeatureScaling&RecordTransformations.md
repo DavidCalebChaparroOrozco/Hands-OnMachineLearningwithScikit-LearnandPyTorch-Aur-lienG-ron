@@ -84,3 +84,93 @@ $$x' = \frac{(x- 10)}{(30)}$$
 
 ---
 
+## Standardization `Z-Score Scaling`
+
+$$z = \frac{(x - \mu)}{\sigma}$$
+
+- $z$: original value
+- $\mu:$ mean of the variable
+- $\sigma:$ standard deviation
+> The result indicates how much $\sigma$ the value is from the mean
+
+- $\mu = 0$ Resulting mean
+- $\sigma = 1$ Standard deviation
+
+> Does not guarantee a fixed range, but works well with moderate outliers
+
+![alt text](StandardNormalDistributionwithKeyZ-scorePoints.png)
+
+---
+
+### Standardization: Example with median_income
+
+5 median_income values: $1.5, 3.0, 4.0, 5.0, 6.0$
+
+- $\mu = 3.9$ `Mean`
+- $\sigma = 1.56$ `Standard Deviation`
+
+| median_income (x) | x − μ | z = (x − μ) / σ |
+| ----------------- | ----- | --------------- |
+| 1.5               | -2.4  | -1.54           |
+| 3.0               | -0.9  | -0.58           |
+| 4.0               | 0.1   | 0.06            |
+| 5.0               | 1.1   | 0.71            |
+| 6.0               | 2.1   | 1.35            |
+
+
+> - mean of x' ≈ 0
+> - standard deviation ≈ 1
+
+---
+
+## Comparison of Scaling Methods
+
+| Method | Typical Range | When to Use | Key Note |
+|------|------|------|------|
+| Standardization (Z-score) | Mean = 0, Std = 1 | When data follows a roughly normal distribution and for models like Logistic Regression, SVM, and Linear Regression | Centers the data around the mean and scales by standard deviation |
+| Min-Max Scaling | [0, 1] | When you need bounded features or when using neural networks and distance-based models like KNN | Sensitive to outliers because it uses min and max values |
+| Robust Scaling | Typically around [-2, 2] but depends on IQR | When the dataset contains many outliers | Uses median and interquartile range (IQR) instead of mean and standard deviation |
+| Max Absolute Scaling | [-1, 1] | When working with sparse datasets | Scales by dividing by the maximum absolute value |
+| Log Scaling | No fixed range | When data is highly skewed (e.g., income, population) | Compresses large values and reduces skewness |
+
+---
+
+## The Problem: Heavy-Tailed Distributions
+
+### Heavy-Tailed Distributions
+A heavy-tailed distribution has extremely large values ​​that are not unusual.
+
+Example: Population of districts
+$800, 1200, 1500, 2000, ..., 30000
+
+What does Min-Max Scaling do?
+
+> Normal values ​​become: $0.000 → 0.005$
+> The outlier becomes: $1.00$
+> → Everything compressed close to $0$
+
+> Standardization: The standard deviation is inflated → normal values ​​compressed close to $0$
+
+---
+
+## Solution: Transform Before Scaling
+
+### Logarithm
+$$x' = log(x)$$
+
+$1,000 → 6.9 * 10,000 → 9.2 * 100,000 → 11.5$
+- Very heavy tail
+- Very large values
+- Grows multiplicatively
+
+![alt text](LogarithmicTransformation.png)
+
+### Square Root
+$x' = \sqrt{x}$
+
+$100 → 10 * 1,000 → 31.6$
+- Slight asymmetry
+- Large, non-extreme values
+- Smoothing
+
+![alt text](SquareRootTransformation.png)
