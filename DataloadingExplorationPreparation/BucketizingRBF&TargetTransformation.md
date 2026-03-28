@@ -292,3 +292,125 @@ plt.show()
 ```
 
 ![alt text](HousingMedianAge.png)
+
+---
+
+## Transforming the Target
+
+So far we've transformed the features (x)...
+
+**But sometimes it's also necessary to transform the target (y)**
+
+The variable we want to predict may also need transformations
+
+---
+
+## The Problem with the Untransformed Target
+
+- ✖️ **Problem:** The target (price) may have a highly skewed distribution, with extreme values ​​that hinder learning.
+
+- ✅ **Solution:** Apply the logarithm to the target:
+$y = \log (price)$
+
+> Distribution closer to normal → facilitates learning.
+
+---
+
+## The Inverse Transformation
+
+The model predicts:
+`model.prect(x)` → 10.8
+
+This means: $log(price) = 10.8$
+
+> This is not the actual price, it's the log of the price.
+
+## `inverse_transform`
+To get the actual price:
+```python
+price = exp(10.8)
+price = e^10.8
+≈ 49.021
+```
+
+> You must always undo the transformation.
+
+---
+
+## The Manual Method: It Works, But It's Risky
+
+### 1. Scale the Target
+```python
+target_scaler = StandardScaler()
+scaled_labels = target_scaler.fit_transform(housing_labels_pd.to_frame())
+```
+
+### 2. Train
+```python
+model.fit(X, scaled_labels)
+```
+
+### 3. Predict and Descale
+```python
+scaled_preds = models.predict(X_new)
+predictions = target_scaler.inverse_transform(scaled_preds)
+```
+
+### **Problems with this Approach**
+- Forgetting to apply `inverse_transform`
+- Accidentally using a different scaler
+- Inconsistencies in production
+
+**Incorrect Predictions**
+
+---
+
+## Scikit-learn's Elegant Solution
+
+### 1. Build the Model
+```python
+model = TransformedTargetRegressor(
+    regressor = LinearRegression(),
+    transformer = StandardScaler()
+)
+```
+
+### 2. Train (One Step!)
+```python
+model.fit(X, y)
+```
+
+### 3. Predict (Direct Real Price)
+```python
+model.predict(X)
+```
+
+### What Happens Internally
+```python
+model.fit(X, y) 
+→ y_scaled = scaler.fit_transform(y)
+→ regressor.fit(X, y_scaled)
+
+model.predict(X)
+→ pred_scaled = regressor.predict(X)
+→ pred_real = scaler.inverse_transform(pred_scaled)
+```
+
+> All automatic! No risk of manual errors.
+
+---
+
+## Comparison: Manual Target Scaling vs TransformedTargetRegressor (Safe & Automated Approach)
+
+| Aspect                     | Manual Method                                                                 | TransformedTargetRegressor                                      |
+|---------------------------|------------------------------------------------------------------------------|------------------------------------------------------------------|
+| Target Scaling            | You manually scale the target using a scaler                                 | Automatically scales the target internally                      |
+| Training Process          | Train the model using scaled labels                                          | Train the model directly with original labels                   |
+| Prediction                | Must manually inverse the scaling after prediction                           | Returns predictions already in the original scale               |
+| Code Complexity           | More steps and more room for mistakes                                        | Cleaner and simpler (less code)                                 |
+| Risk of Errors            | High (easy to forget inverse_transform or misuse scaler)                     | Very low (handled automatically)                                |
+| Consistency               | Can become inconsistent between training and production                      | Consistent behavior across training and prediction              |
+| Maintainability           | Harder to maintain due to manual steps                                       | Easier to maintain and understand                              |
+| Reusability               | Harder to reuse without repeating logic                                      | Easy to reuse as a single model object                          |
+| Internal Workflow         | You must manually control scaling → training → inverse scaling               | Automatically: scale → train → predict → inverse scale          |
+| Production Safety         | Risky (bugs can silently produce wrong predictions)                          | Safer (less chance of silent errors)                            |
