@@ -75,3 +75,67 @@ pipe = Pipeline([
     ("scaler", StandardScaler()),
 ])
 ```
+
+---
+
+## When to use each one?
+
+| Approach                         | Learns from the dataset? | Saves its own parameters? | Pipeline compatible? | GridSearchCV compatible? | Code complexity | Typical example |
+|----------------------------------|--------------------------|----------------------------|----------------------|--------------------------|------------------|------------------|
+| FunctionTransformer              | ❌ No                    | ❌ No                      | ✅ Yes               | ❌ Limited               | ⭐ Very Low       | Simple log transform, scaling a column, custom math function |
+| Custom Class (BaseEstimator)     | ✅ Yes                   | ✅ Yes                     | ✅ Yes               | ✅ Yes                   | ⭐⭐⭐ Medium       | Target encoding, feature selection, custom normalization based on training data |
+
+> Practical rule:
+> - If you need a real `fit()` function → use a Class
+> - Otherwise → `FunctionTransformer`
+
+---
+
+## Custom Transformer
+
+A class you create yourself to transform data within a machine learning pipeline.
+
+> Your own processing "piece" that fits into any flow
+
+- ### Clean text:
+    Normalize, remove characters, tokenize
+
+- ### New columns:
+    Custom feature engineering
+
+- ### Business rules:
+    Domain-specific logic
+
+- ### Custom transformations:
+    What scikit-learn doesn't offer out of the box
+
+> ### Your custom logic, integrated into the pipeline
+
+---
+
+## Anatomy of a Custom Transformer
+
+### Key Parts
+- **`BaseEstimator`:** `get_params` / `set_params` automatic
+- **`TransformerMixin:`** `fit_transform()` free
+- **`_init_():`** Define your parameters
+- **`fit():`** Learn from the dataset
+- **`transform():`** Apply the transformation
+
+```python
+class MyTransformer(BaseEstimator, TransformerMixin):
+
+    def __init__(self, factor=1):
+        # This is a parameter that can be set when creating an instance of MyTransformer. It will be used in the transformation process.
+        self.factor = factor 
+
+    # Learning phase: calculate the mean of the data and store it in an instance variable (self.average_). This will be used later in the transformation phase.
+    def fit(self, X, y=None):
+        self.average_ = X.mean()
+        # Return self to allow chaining of methods (e.g. in a pipeline)
+        return self
+    
+    # Transformation phase: apply the transformation to the data. In this case, it subtracts the mean (self.average_) from each value in X and then multiplies the result by the factor (self.factor).
+    def transform(self, X, y=None):
+        return (X - self.average_) * self.factor
+```
