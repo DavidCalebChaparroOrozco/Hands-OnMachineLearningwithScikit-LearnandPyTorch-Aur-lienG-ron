@@ -139,3 +139,192 @@ class MyTransformer(BaseEstimator, TransformerMixin):
     def transform(self, X, y=None):
         return (X - self.average_) * self.factor
 ```
+
+---
+
+## What does "learning" mean?
+
+> Extracting information from the data and saving it for later use. - The true meaning of `fit()`
+
+### `scaler.fit(X_train)`
+**Calculates and saves:**
+- self.mean = median of each column $(\mu)$
+- self.scale = standard deviation $(\alpha)$
+
+### `scaler.transform(X)`
+**Uses what was saved:**
+$$\frac{X - \mu}{\alpha}$$
+
+> Doesn't calculate anything new
+> 
+> Learn = calculate dataset values ​​and store them in the object
+
+---
+
+## Custom Transformers in Pipeline
+
+### Pipeline Flow
+- `MyTransformer:` Custom
+- `StandardScaler:` sklearn
+- `LogisticRegression:` Model
+
+```python
+# Example usage of MyStandardScaler in a pipeline with a custom transformer
+class MyTransformed(BaseEstimator, TransformerMixin):
+    def fit(self, X, y=None):
+        self.average_ = X.mean()
+        return self
+    
+    def transform(self, X, y=None):
+        return X - self.average_
+    
+
+pipe = Pipeline([
+    ("my_step", MyTransformed()),
+    ("scaler", MyStandardScaler()),
+    ("model", LinearRegression()),
+])
+pipe.fit(X_train, y_train)
+pipe.predict(X_test)
+```
+
+> Your transformer fits just like any native sklearn step.
+
+---
+
+## Benefits in Real-World Projects
+
+### 1. Automation
+The entire flow runs using `pipe.fit()` and `pipe.predict()`. No manual steps required.
+
+### 2. Error Prevention
+The pipeline ensures that both training and testing receive the same preprocessing.
+
+### 3. Code Reuse
+Write once, use it in multiple projects and experiments.
+
+### 4. Production
+The same pipeline trains and serves predictions in production.
+
+> ### **Use them when:**
+> - Custom logic that scikit-learn doesn't have
+> - Repetitive preprocessing between experiments
+> - Professional pipelines ready for production
+
+---
+
+## Inheritance: `BaseEstimator` and `TransformerMixin`
+
+### `TransformerMixin`
+**Gives you:**
+`fit_transform(X, y=None)`
+
+Automatically calls `fit()` and then `transform()` in a single line.
+```python
+# Without TransformerMixin
+t.fit(X)
+t.transform(X)
+
+# With TransformerMixin
+t.fit_transform(X) ✅
+```
+
+> Compatible with `cross_val_score` and more.
+
+
+### `BaseEstimator`
+**It gives you:**
+- `get_params()` → reads your parameters
+- `set_params()` → modifies them
+
+Automatically reads the parameters defined in `_init_()`
+```python
+t = MyTransformer(factor = 2)
+t.get_params()
+# {'factor': 2}
+
+t.set_params(factor = 5)
+```
+
+> Required by `GridSearchCV` and `clone()`
+> 
+> Inherit both: you get `fit_transform`, `get_params` and `set_params` for free
+
+---
+
+## `get_parms()` and `set_parms()`
+```python
+# Example usage of MyTransformer
+class MyTransformer(BaseEstimator, TransformerMixin):
+    def __init__(self, factor=1, offset=0):
+        self.factor = factor
+        self.offset = offset
+
+    def transform(self, X, y=None):
+        return X * self.factor + self.offset
+    
+t = MyTransformer(factor=2, offset=3)
+
+# get_params() → Automatic with BaseEstimator
+t.get_params()
+# {"factor": 2, "offset": 3}
+
+# set_params() → Change parameters and return self for chaining
+t.set_params(factor=10)
+t.get_params()
+# {"factor": 10, "offset": 3}
+```
+
+### What are they for?
+
+- Automatically read and modify parameters
+- No extra code required
+
+### `GridSearchCV` needs them
+```python
+param_grid = {
+    "my_step_factor": [1, 2, 5]
+}
+GridSearchCV(pipe, param_grid)
+```
+Automatically tests different factor values
+
+---
+
+## Problem: `*args` and `**kwargs` in `__init__`
+
+> If you use `*args` or `**kwargs`, sklearn doesn't know what parameters you have:
+> - `get_params()` fails
+> - `GridSearchCV` breaks
+
+### ✖️ WRONG, don't do this
+```python
+class MyTransformer(BaseEstimator):
+    def __init__(self, *args, **kwargs):
+        # Sklearn cannot read the parameters
+        self.args = args
+        self.kwargs = kwargs
+
+t = MyTransformer(factor = 2)
+t.get_params()
+# {} ← Empty! I'm not detecting any "factor"
+
+# GridSearchCV with param_grid fails ✖️
+```
+
+### ✅ Good practice, do this
+```python
+class MyTransformer(BaseEstimator):
+    def __init__(self, factor = 1, offset = 0):
+        # Explicit parameters
+        self.factor = factor
+        self.offset = offset
+
+t = MyTransformer(factor = 2)
+t.get_params()
+# {"factor": 2, "offset": 0} ✅
+
+# GridSearchCV works perfectly ✅
+```
+
+> Always use explicit parameters in `__init__()`
