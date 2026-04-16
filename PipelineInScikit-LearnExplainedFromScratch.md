@@ -139,7 +139,89 @@ It chains transformers and a final estimator into a single object.
 
 Each step receives the output of the previous one, and Scikit-learn handles calling `fit_transform` in the intermediate steps and `fit` in the last one.
 
-X → step_1 → step_2 → ... → model → y'
+```
+X → step_1 → step_2 → ... → model → ŷ
+```
 
 ### **Rule**
 All intermediate steps must implement `fit_transform`. The last step can be a transformer or a predictor.
+
+---
+
+## Execution Flow: `predict()`
+
+`pipeline.predict(X_test)`
+
+### 1. Step 1: Transformer `transform(x)`
+Uses parameters learned in `fit()`
+
+### 2. Step 2: Transformer `transform(x_transformed)`
+Applies chained transformations
+
+### Last Step: Predictor `predict(X_final)`
+Generates final predictions
+
+> ⚠️ `fit()` is NEVER called during `predict()`
+
+### Data Leakage Prevention
+Parameters are learned ONLY from the training set.
+
+New data is transformed using these parameters, without "seeing" the training set.
+
+### `fit()` VS `predict()`
+|   _`fit()`_   	| `fit_transform()` 	| `fit()`     	|
+|:-----------:	|-------------------	|-------------	|
+| _`predict()`_ 	| `transform()`     	| `predict()` 	|
+
+---
+
+## make_pipeline, Simplified Alternative
+
+### Manual Pipeline
+```python
+from sklearn.pipeline import Pipeline
+
+pipe = Pipeline([
+    ("scaler", StandardScaler()),
+    ("classifier", LogisticRegression())
+])
+```
+
+**Assigned Names:**
+- 'scaler' → StandardScaler
+- 'classifier' → LogisticRegression
+
+### make_pipeline (recommended)
+```python
+from sklearn.pipeline import make_pipeline
+
+pipe = make_pipeline(
+    StandardScaler(),
+    LogisticRegression()
+)
+```
+
+**Auto-generated Names:**
+- 'standardscaler' → StandardScaler
+- 'logisticregression' → LogisticRegression
+
+> If there are duplicate classes, add suffixes: 'standardscaler', 'standardscaler-2'
+
+---
+
+## ColumnTransformer, The Problem
+
+### Heterogeneous Data
+Columns of different data types require different transformations
+
+| **age (num)** 	| **salary(num)** 	| **city(cat)** 	|
+|:-------------:	|-----------------	|---------------	|
+|       25      	|      50.000     	|   _New York_  	|
+|       30      	|      60.000     	|    _London_   	|
+|      NaN      	|      75.000     	|    _Paris_    	|
+|       45      	|       NaN       	|    _London_   	|
+|       22      	|      45.000     	|   _New York_  	|
+
+### The Solution: `ColumnTransformer`
+1. `age, salary`: Impute (mean) → StandardScaler
+2. `city`: Impute (mode) → OneHotEncoder
