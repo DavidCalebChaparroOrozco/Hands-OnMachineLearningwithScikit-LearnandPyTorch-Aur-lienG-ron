@@ -225,3 +225,48 @@ Columns of different data types require different transformations
 ### The Solution: `ColumnTransformer`
 1. `age, salary`: Impute (mean) → StandardScaler
 2. `city`: Impute (mode) → OneHotEncoder
+
+```python
+from sklearn.compose import ColumnTransformer
+
+ct = ColumnTransformer([
+    ("num", num_pipeline, ["age", "salary"]),
+    ("cat", cat_pipeline, ["city"])
+])
+
+# remainder = 'drop'
+```
+
+## Convenience Helpers
+
+### `make_column_transformer`
+Creates a `ColumnTransformer` without names
+
+```python
+from sklearn.compose import make_column_transformer
+
+ct = make_column_transformer(
+    (StandardScaler(), ['age', 'salary']),
+    (OneHotEncoder(), ['city'])
+)
+
+# No need for names
+```
+
+
+### `make_column_selector`
+Selects columns by `dtype` or name
+```python
+from sklearn.compose import make_column_selector
+import numpy as np
+
+# Automatically numeric
+num_selector = make_column_selector(
+    dtype_include = np.number
+)
+
+# or by regular expression pattern
+pattern = make_column_selector(
+    pattern='^feat_'
+)
+```
