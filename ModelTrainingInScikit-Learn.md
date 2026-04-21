@@ -61,3 +61,14 @@ How to interpret RMSE?
 
 ---
 
+## 2. Cross Validation
+
+### Reliable Evaluation
+
+**The problem:** A single train/test split can yield unrepresentative results.
+
+**The solution:** Evaluate the model multiple times with different splits and average the scores.
+
+> Each data point acts as a test at least once.
+
+![alt text](CrossValidation.png)
