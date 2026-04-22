@@ -72,3 +72,62 @@ How to interpret RMSE?
 > Each data point acts as a test at least once.
 
 ![alt text](CrossValidation.png)
+
+### Actual Flow
+
+![alt text](ActualFlow.png)
+
+- **Untouchable Test Set:** Never used during training or cross-validation. Only touched once at the end for the final model evaluation.
+
+- **Cross-validation at 80%:** Divided into k folds to adjust hypermeters and reliably compare models.
+
+### How Many Folds?
+
+- **k = 10** `Standard`: Balance between accuracy and computational cost
+- **k = 5** `Large Datasets`: Faster when there is a lot of data available
+- **k = n** `Leave-One-Out`: For very small datasets, maximum accuracy, very slow.
+
+---
+
+## Decision Tree
+### Chained Decisions
+
+What is a decision tree? It makes decisions by asking a series of linked questions, like a flowchart.
+> Example: Predicting the price of a house based on income, location, and age.
+
+![alt text](DecisionTree.png)
+
+### Key Terms and Types
+
+- **Root Node:** The first question in the tree (the most important)
+- **Internal Nodes:** Intermediate questions that branch out from the tree
+- **Leaf Nodes:** Final nodes that return the predicted value
+
+_`DecisionTreeRegressor`_ Continuous numeric values.
+> House price: $284,000
+
+_`DecisionTreeClassifier`_ Categories or classes
+> Type: Luxury / Standard / Economy
+
+## The Overfitting Problem
+
+- Memorizes instead of learning: The tree learns each training data point by rote, including noise.
+
+RMSE in Training: 0 
+`Perfect prediction!`
+
+
+RMSE in Cross-Value: 66,574 
+`Poor with new data`
+
+> An RMSE of 0 in training is a warning sign, not a sign of success.
+
+## The Power of Many Trees
+
+![alt text](ThePowerofManyTrees.png)
+> Individual errors cancel out when averaging.
+
+- Bagging: Each tree is trained with a random sample from the dataset.
+
+- Feature Randomness: Each split uses a random subset of variables.
+
